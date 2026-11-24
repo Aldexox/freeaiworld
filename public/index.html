@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OmniFree AI — Global Free Models for Coding, Writing &amp; Images</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css?v=4" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Minimal Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <span class="brand-name">OmniFree</span>
+      </div>
+
+      <nav class="nav-pills" role="tablist" aria-label="Workspaces">
+        <button class="nav-pill active" data-tab="coding" role="tab" aria-selected="true">Code</button>
+        <button class="nav-pill" data-tab="writing" role="tab" aria-selected="false">Write</button>
+        <button class="nav-pill" data-tab="image" role="tab" aria-selected="false">Image</button>
+        <button class="nav-pill" data-tab="models" role="tab" aria-selected="false">
+          AI Tools &amp; Models <span class="pill-count" id="model-count-badge">0</span>
+        </button>
+      </nav>
+
+      <div class="topbar-right">
+        <button class="icon-pill" id="open-keys-btn" title="Connect free-tier API keys">
+          <span class="status-dot" id="proxy-status-dot"></span>
+          <span id="keys-connected-badge">API Keys</span>
+        </button>
+        <button class="icon-btn" id="theme-toggle-btn" title="Switch light / dark theme" aria-label="Toggle theme">◐</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-area">
+      <!-- ==================== 1. CODING STUDIO ==================== -->
+      <section class="studio-view active" id="view-coding">
+        <!-- Starts hidden (workbench-hidden); reveals automatically when build finishes -->
+        <div class="coding-split workbench-hidden" id="coding-split">
+          <!-- Left: Gemini-style Streaming Conversation -->
+          <div class="chat-column">
+            <div class="chat-scroll" id="coding-messages">
+              <div class="welcome-hero">
+                <div class="hero-glow">✦</div>
+                <h1>What would you like to build?</h1>
+                <p>Attach photos, videos, PDFs, or code files. Stream builds word-by-word — websites automatically launch on <code>localhost</code>, and Python/JS/SQL run in the built-in terminal once complete.</p>
+                <div class="starter-grid">
+                  <button class="starter-card" data-studio="coding" data-prompt="Build a sleek modern portfolio website for a photographer with dark mode, gallery grid, and contact modal as a single HTML file.">
+                    <strong>Build &amp; Host a Website</strong>
+                    <span>Auto-launches on localhost</span>
+                  </button>
+                  <button class="starter-card" data-studio="coding" data-prompt="Write a Python script that finds all prime numbers up to 100 using the Sieve of Eratosthenes and prints a formatted summary table.">
+                    <strong>Prime Sieve in Python</strong>
+                    <span>Runs in built-in Terminal</span>
+                  </button>
+                  <button class="starter-card" data-studio="coding" data-prompt="Create a SQLite SQL script for an e-commerce store (users, orders) with sample inserts and a query showing top 3 customers by total spend.">
+                    <strong>SQL Analytics Query</strong>
+                    <span>Executes in SQLite :memory:</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating Minimal Composer with Attachments -->
+            <div class="composer-wrap">
+              <form class="composer-box" id="coding-form" data-dropzone="coding">
+                <div class="attachment-strip" id="coding-attachments" hidden></div>
+                <textarea
+                  id="coding-input"
+                  class="composer-textarea"
+                  rows="2"
+                  placeholder="Describe a website or script, or drop photos, videos, PDFs, or files here..."
+                ></textarea>
+                <div class="composer-bar">
+                  <div class="composer-controls">
+                    <input type="file" id="coding-file-input" hidden multiple accept="image/*,video/*,.pdf,.docx,.txt,.md,.csv,.json,.py,.js,.ts,.tsx,.jsx,.html,.css,.sql,.xml,.yaml,.yml,.log,.svg" />
+                    <button type="button" class="btn-attach" id="coding-attach-btn" title="Attach photos, videos, PDFs, Word docs, or code files">
+                      📎 Attach Files
+                    </button>
+                    <select id="coding-model-select" class="mini-select" aria-label="Coding model"></select>
+                    <select id="coding-role-select" class="mini-select" aria-label="Engineering role">
+                      <option value="fullstack">Full-Stack</option>
+                      <option value="debugger">Debug</option>
+                      <option value="reviewer">Review</option>
+                      <option value="refactor">Refactor</option>
+                      <option value="sql">SQL / Data</option>
+                    </select>
+                    <select id="coding-lang-select" class="mini-select" aria-label="Target language">
+                      <option value="Auto">Auto Lang</option>
+                      <option value="HTML / CSS / JS (Single File)">Website (HTML)</option>
+                      <option value="Python">Python</option>
+                      <option value="JavaScript">JavaScript</option>
+                      <option value="SQL">SQL</option>
+                      <option value="TypeScript">TypeScript</option>
+                    </select>
+                    <label class="toggle-chip" title="Automatically host website on localhost or run code when finished">
+                      <input type="checkbox" id="autorun-toggle" checked />
+                      <span>Auto-launch</span>
+                    </label>
+                  </div>
+                  <div class="composer-actions">
+                    <button type="button" class="btn-subtle" id="coding-clear-btn" title="New chat">New</button>
+                    <button type="button" class="btn-subtle" id="toggle-workbench-btn" hidden title="Show/Hide Result & Terminal">Result</button>
+                    <button type="submit" class="btn-send" id="coding-send-btn">Send</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Right: Built-in Output Workbench (Hidden until build completes) -->
+          <aside class="workbench" id="coding-workbench">
+            <div class="workbench-header">
+              <div class="workbench-tabs">
+                <button class="wb-tab active" data-wb-tab="result">Result</button>
+                <button class="wb-tab" data-wb-tab="terminal">
+                  Terminal <span class="term-dot" id="terminal-status-dot"></span>
+                </button>
+                <button class="wb-tab" data-wb-tab="code">Code</button>
+              </div>
+              <div class="workbench-actions">
+                <a class="localhost-pill" id="hosted-url-link" href="#" target="_blank" rel="noopener noreferrer" hidden title="Open hosted website in a new browser tab">
+                  localhost ↗
+                </a>
+                <button class="btn-run" id="wb-run-btn" title="Execute or host current code">▶ Run</button>
+                <button class="btn-subtle" id="artifact-copy-btn">Copy</button>
+                <button class="btn-subtle" id="artifact-download-btn">Save</button>
+                <button class="btn-subtle" id="close-workbench-btn" title="Close result panel">✕</button>
+              </div>
+            </div>
+
+            <div class="workbench-body">
+              <!-- Live Localhost Website Output -->
+              <div class="wb-panel active" id="wb-panel-result">
+                <div class="wb-empty" id="result-empty-state">
+                  <span>Website preview will load on localhost once the build finishes.</span>
+                </div>
+                <iframe
+                  id="artifact-iframe"
+                  class="preview-frame"
+                  title="Localhost Website Preview"
+                  hidden
+                ></iframe>
+              </div>
+
+              <!-- Built-in Terminal Output -->
+              <div class="wb-panel terminal-panel" id="wb-panel-terminal">
+                <div class="terminal-topbar">
+                  <span class="terminal-cmd" id="terminal-cmd-label">omnifree:~/workspace$ ready</span>
+                  <div class="terminal-meta-right">
+                    <span class="exit-badge" id="terminal-exit-badge"></span>
+                    <button class="btn-subtle" id="terminal-clear-btn">Clear</button>
+                  </div>
+                </div>
+                <pre class="terminal-screen" id="terminal-output">OmniFree Terminal ready.</pre>
+              </div>
+
+              <!-- Editable Code Inspector -->
+              <div class="wb-panel" id="wb-panel-code">
+                <div class="code-meta-bar" id="artifact-meta">No code loaded yet.</div>
+                <textarea id="artifact-editor" class="code-editor" spellcheck="false" placeholder="// Code appears here automatically as it finishes generating..."></textarea>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ==================== 2. WRITING STUDIO ==================== -->
+      <section class="studio-view" id="view-writing">
+        <div class="writing-split">
+          <div class="chat-column">
+            <div class="chat-scroll" id="writing-messages">
+              <div class="welcome-hero">
+                <div class="hero-glow">✎</div>
+                <h1>Write, summarize &amp; create decks</h1>
+                <p>Attach PDFs, Word docs, photos, videos, or notes for the AI to summarize, rewrite, or turn into structured presentations and articles.</p>
+                <div class="starter-grid">
+                  <button class="starter-card" data-studio="writing" data-prompt="Create a clean 8-slide presentation outline (title, bullet points, speaker notes) for launching an AI productivity app.">
+                    <strong>Presentation Outline</strong>
+                    <span>Ready for PDF / Gamma</span>
+                  </button>
+                  <button class="starter-card" data-studio="writing" data-prompt="Draft a concise, high-reply outreach email to a design lead proposing a collaboration.">
+                    <strong>Outreach Email</strong>
+                    <span>Short &amp; persuasive</span>
+                  </button>
+                  <button class="starter-card" data-studio="writing" data-prompt="Write a vivid 350-word opening scene of a story set inside a rain-soaked Tokyo bookshop at midnight.">
+                    <strong>Midnight Bookshop</strong>
+                    <span>Atmospheric fiction</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="composer-wrap">
+              <form class="composer-box" id="writing-form" data-dropzone="writing">
+                <div class="attachment-strip" id="writing-attachments" hidden></div>
+                <textarea
+                  id="writing-input"
+                  class="composer-textarea"
+                  rows="2"
+                  placeholder="Write, summarize an attached PDF/video, or draft a presentation..."
+                ></textarea>
+                <div class="composer-bar">
+                  <div class="composer-controls">
+                    <input type="file" id="writing-file-input" hidden multiple accept="image/*,video/*,.pdf,.docx,.txt,.md,.csv,.json,.py,.js,.ts,.html,.css,.sql,.xml,.yaml,.yml,.log,.svg" />
+                    <button type="button" class="btn-attach" id="writing-attach-btn" title="Attach photos, videos, PDFs, or documents">
+                      📎 Attach Files
+                    </button>
+                    <select id="writing-model-select" class="mini-select" aria-label="Writing model"></select>
+                    <select id="writing-mode-select" class="mini-select" aria-label="Format">
+                      <option value="blog">Article</option>
+                      <option value="slides">Presentation Deck</option>
+                      <option value="email">Email</option>
+                      <option value="story">Story</option>
+                      <option value="academic">Summary / PDF</option>
+                      <option value="polish">Rewrite</option>
+                    </select>
+                    <select id="writing-tone-select" class="mini-select" aria-label="Tone">
+                      <option value="Engaging & Clear">Clear Tone</option>
+                      <option value="Professional">Professional</option>
+                      <option value="Concise & Punchy">Concise</option>
+                      <option value="Persuasive">Persuasive</option>
+                      <option value="Warm & Conversational">Warm</option>
+                    </select>
+                    <select id="writing-length-select" class="mini-select" aria-label="Length">
+                      <option value="Short (100-200 words)">Short</option>
+                      <option value="Medium (350-600 words)" selected>Medium</option>
+                      <option value="Long (800-1400 words)">Long</option>
+                    </select>
+                  </div>
+                  <div class="composer-actions">
+                    <button type="button" class="btn-subtle" id="writing-clear-btn">New</button>
+                    <button type="submit" class="btn-send" id="writing-send-btn">Write</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <aside class="workbench">
+            <div class="workbench-header">
+              <div class="doc-header-title">
+                <strong>Document Canvas</strong>
+                <span id="doc-word-count">0 words</span>
+              </div>
+              <div class="workbench-actions">
+                <button class="btn-run" id="doc-polish-btn">✦ Polish</button>
+                <button class="btn-subtle" id="doc-copy-btn">Copy</button>
+                <button class="btn-subtle" id="doc-download-md">Export .md</button>
+                <button class="btn-subtle" id="doc-clear-btn">Clear</button>
+              </div>
+            </div>
+            <textarea
+              id="writing-document"
+              class="document-editor"
+              placeholder="Your editable draft lives here. Click 'Use as Draft' on any streamed reply, or paste text and click ✦ Polish..."
+            ></textarea>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ==================== 3. IMAGE STUDIO ==================== -->
+      <section class="studio-view" id="view-image">
+        <!-- Starts centered (gallery-hidden); gallery appears once an image is created -->
+        <div class="image-layout gallery-hidden" id="image-layout">
+          <aside class="image-sidebar">
+            <div class="image-intro" id="image-intro-header">
+              <div class="hero-glow">◈</div>
+              <h2>Image Studio</h2>
+              <p class="micro-hint">Create visuals with free global models. Your finished image appears automatically when done.</p>
+            </div>
+
+            <div class="control-block">
+              <label class="micro-label" for="image-model-select">Model</label>
+              <select id="image-model-select" class="clean-input"></select>
+              <p class="micro-hint" id="image-model-note">Instant FLUX &amp; Turbo generation with no API key.</p>
+            </div>
+
+            <div class="control-block">
+              <div class="label-split">
+                <label class="micro-label" for="image-prompt-input">Prompt</label>
+                <button type="button" class="btn-subtle" id="enhance-prompt-btn">✦ Enhance</button>
+              </div>
+              <textarea
+                id="image-prompt-input"
+                class="clean-input"
+                rows="4"
+                placeholder="Describe the photo, illustration, or logo you want to create..."
+              ></textarea>
+            </div>
+
+            <div class="control-block">
+              <div class="label-split">
+                <span class="micro-label">Reference Photo / File (Optional)</span>
+                <button type="button" class="btn-attach" id="image-ref-btn">📎 Upload Photo</button>
+              </div>
+              <input type="file" id="image-ref-input" hidden accept="image/*" />
+              <div class="image-ref-preview" id="image-ref-preview" hidden>
+                <img id="image-ref-thumb" src="" alt="Reference preview" />
+                <span id="image-ref-name"></span>
+                <button type="button" class="att-chip-remove" id="image-ref-clear">✕</button>
+              </div>
+            </div>
+
+            <div class="control-block">
+              <span class="micro-label">Style</span>
+              <div class="pill-wrap" id="image-style-pills">
+                <button type="button" class="chip active" data-style="">None</button>
+                <button type="button" class="chip" data-style="photorealistic, 85mm lens, natural light, ultra detailed">Photo</button>
+                <button type="button" class="chip" data-style="cinematic concept art, atmospheric lighting">Concept Art</button>
+                <button type="button" class="chip" data-style="studio anime illustration, crisp linework, vibrant">Anime</button>
+                <button type="button" class="chip" data-style="minimalist 3D studio render, soft lighting">3D Render</button>
+                <button type="button" class="chip" data-style="minimalist vector logo, clean geometric design">Logo</button>
+                <button type="button" class="chip" data-style="delicate watercolor painting on textured paper">Watercolor</button>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="control-block">
+                <label class="micro-label" for="image-aspect-select">Size</label>
+                <select id="image-aspect-select" class="clean-input">
+                  <option value="1024x1024">1:1 Square</option>
+                  <option value="1280x720">16:9 Wide</option>
+                  <option value="720x1280">9:16 Portrait</option>
+                  <option value="1024x768">4:3 Classic</option>
+                </select>
+              </div>
+              <div class="control-block">
+                <label class="micro-label" for="image-seed-input">Seed</label>
+                <input id="image-seed-input" type="number" class="clean-input" placeholder="Random" />
+              </div>
+            </div>
+
+            <button type="button" class="btn-send btn-full" id="generate-image-btn">Generate Image</button>
+
+            <div class="quick-list">
+              <span class="micro-label">Ideas</span>
+              <button type="button" class="quick-idea" data-img-prompt="A serene glass conservatory inside a misty alpine pine forest at sunrise">Alpine Glass Conservatory</button>
+              <button type="button" class="quick-idea" data-img-prompt="Minimalist geometric fox emblem logo in cobalt and warm gold on deep obsidian">Geometric Fox Logo</button>
+            </div>
+          </aside>
+
+          <div class="gallery-pane" id="image-gallery-pane">
+            <div class="gallery-top">
+              <h2>Created Images</h2>
+              <span class="micro-hint" id="gallery-count">0 images</span>
+            </div>
+            <div id="image-gallery-grid" class="gallery-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== 4. GLOBAL AI TOOLS & MODELS DIRECTORY ==================== -->
+      <section class="studio-view" id="view-models">
+        <div class="models-shell">
+          <div class="models-top">
+            <div>
+              <h2>Global Free AI Models &amp; Tools</h2>
+              <p class="micro-hint" id="sync-summary-bar">Every model &amp; tool shows its free tier and what task it is best for.</p>
+            </div>
+            <button class="btn-subtle" id="sync-catalog-btn">↻ Sync Live</button>
+          </div>
+
+          <div class="models-bar">
+            <input
+              type="search"
+              id="models-search-input"
+              class="clean-input search-box"
+              placeholder="Search models &amp; tools (coding, video, pdf, photo, gemini, qwen, gamma...)"
+            />
+            <select id="models-provider-filter" class="clean-input provider-select">
+              <option value="all">All Providers</option>
+            </select>
+            <div class="pill-wrap" id="models-cap-filter">
+              <button class="chip active" data-cap="all">All</button>
+              <button class="chip" data-cap="nokey">100% Free · No Key</button>
+              <button class="chip" data-cap="coding">Coding</button>
+              <button class="chip" data-cap="everyday">Everyday Use</button>
+              <button class="chip" data-cap="photo">Photo Making</button>
+              <button class="chip" data-cap="pdf">PDF &amp; Presentations</button>
+              <button class="chip" data-cap="video">Video &amp; Editing</button>
+            </div>
+          </div>
+
+          <div id="models-grid" class="models-grid"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== API KEYS MODAL ==================== -->
+  <div class="modal-backdrop" id="keys-modal" hidden>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="keys-modal-title">
+      <div class="modal-header">
+        <div>
+          <h2 id="keys-modal-title">Free-Tier Provider Keys</h2>
+          <p class="micro-hint">Stored locally in your browser. Pollinations &amp; Ollama work with zero keys.</p>
+        </div>
+        <button class="icon-btn" id="close-keys-btn" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body" id="keys-provider-list"></div>
+      <div class="modal-footer">
+        <span class="micro-hint">OpenRouter &amp; Google AI Studio keys are 100% free (no credit card).</span>
+        <div class="modal-actions">
+          <button class="btn-subtle" id="cancel-keys-btn">Cancel</button>
+          <button class="btn-send" id="save-keys-btn">Save Keys</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LIGHTBOX MODAL ==================== -->
+  <div class="modal-backdrop" id="lightbox-modal" hidden>
+    <div class="lightbox-dialog">
+      <button class="icon-btn lightbox-close" id="close-lightbox-btn" aria-label="Close">✕</button>
+      <img id="lightbox-img" src="" alt="Generated artwork" />
+      <div class="lightbox-footer">
+        <p id="lightbox-prompt"></p>
+        <div class="modal-actions">
+          <button class="btn-subtle" id="lightbox-reuse-btn">Reuse Prompt</button>
+          <a class="btn-send" id="lightbox-download-link" download="omnifree-image.png">Download</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="/js/app.js?v=4"></script>
+</body>
+</html>
