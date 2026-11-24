@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/api/health",   "destination": "/api/health" },
+    { "source": "/api/proxy",    "destination": "/api/proxy" },
+    { "source": "/api/extract",  "destination": "/api/extract" },
+    { "source": "/api/(.*)",     "destination": "/api/stub" },
+    { "source": "/(.*)",         "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin",  "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization, X-Target-Url" }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(?:js|css|html)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, must-revalidate" }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import {
   generateImage,
   generateText,
   generateTextStream,
+  getServerInfo,
   hostWebsiteLocal,
   loadProviderKeys,
   saveProviderKeys,
@@ -75,12 +76,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateWordCount();
   }
 
-  const proxyOnline = await checkServerProxy();
+  const serverInfo = await getServerInfo();
+  const proxyOnline = Boolean(serverInfo?.proxy);
+  const isHosted = Boolean(serverInfo?.hosted);
   const dot = document.getElementById('proxy-status-dot');
   const keysBtn = document.getElementById('open-keys-btn');
   if (proxyOnline) {
     dot.classList.add('online');
-    keysBtn.title = 'Localhost hosting, streaming proxy & code runner active — Click to manage API keys';
+    if (isHosted) {
+      keysBtn.title = 'Vercel hosted mode — streaming proxy active, code runner & site hoster unavailable';
+      // Show hosted-mode banner
+      const banner = document.createElement('div');
+      banner.id = 'hosted-mode-banner';
+      banner.innerHTML = `☁️ <strong>Hosted mode (Vercel)</strong> — AI chat & image generation work fully.
+        Code runner &amp; live website preview require the <a href="https://github.com/Aldexox/freeaiworld" target="_blank" rel="noopener">local version</a>.`;
+      banner.style.cssText = `
+        position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+        background:var(--surface-2,#1e1e2e);color:var(--text-2,#cdd6f4);
+        border:1px solid var(--accent,#89b4fa);border-radius:10px;
+        padding:8px 18px;font-size:0.78rem;z-index:9999;
+        box-shadow:0 4px 20px rgba(0,0,0,.4);text-align:center;
+        max-width:420px;line-height:1.5;`;
+      banner.querySelector('a').style.color = 'var(--accent,#89b4fa)';
+      document.body.appendChild(banner);
+      setTimeout(() => banner.remove(), 12000);
+    } else {
+      keysBtn.title = 'Localhost hosting, streaming proxy & code runner active — Click to manage API keys';
+    }
   } else {
     keysBtn.title = 'Browser direct mode — Click to manage API keys';
   }
