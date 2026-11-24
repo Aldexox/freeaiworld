@@ -1,4 +1,4 @@
-# OmniFree AI Studio
+# freeaiworld
 
 A clean, minimal web workspace for accessing **free AI models around the world** for **Coding**, **Writing**, and **Image Creation** — with **Gemini-style live token streaming** and a **built-in Terminal & Live Result Workbench**.
 

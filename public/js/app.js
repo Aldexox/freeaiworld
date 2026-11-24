@@ -567,7 +567,7 @@ function bindCodingStudio() {
       svg: 'svg',
     };
     const ext = extMap[state.artifactLang] || 'txt';
-    downloadTextFile(`omnifree-output.${ext}`, code);
+    downloadTextFile(`freeaiworld-output.${ext}`, code);
   });
 
   document.getElementById('coding-messages').addEventListener('click', handleCodeActionClick);
@@ -726,7 +726,7 @@ function renderTerminalResult({ command, stdout, stderr, exitCode, durationMs, o
   const dot = document.getElementById('terminal-status-dot');
   const screen = document.getElementById('terminal-output');
 
-  cmdLabel.textContent = `omnifree:~/workspace$ ${command}`;
+  cmdLabel.textContent = `freeaiworld:~/workspace$ ${command}`;
   exitBadge.textContent = `${ok ? '✓' : '✕'} exit ${exitCode} · ${durationMs}ms`;
   exitBadge.className = `exit-badge ${ok ? 'ok' : 'err'}`;
   dot.className = `term-dot ${ok ? 'ok' : 'err'}`;
@@ -780,7 +780,7 @@ async function executeCodeInWorkbench(code, lang) {
       hostLink.textContent = `localhost ↗`;
       hostLink.hidden = false;
 
-      document.getElementById('terminal-cmd-label').textContent = `omnifree:~/workspace$ serve ${hosted.url}`;
+      document.getElementById('terminal-cmd-label').textContent = `freeaiworld:~/workspace$ serve ${hosted.url}`;
       document.getElementById('terminal-output').textContent =
         `$ Website built and hosted live at:\n  ${hosted.url}\n\nReady in Result pane or open in a new tab.`;
       document.getElementById('terminal-exit-badge').textContent = '✓ hosted';
@@ -791,7 +791,7 @@ async function executeCodeInWorkbench(code, lang) {
       hostLink.hidden = true;
       iframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-modals');
       iframe.srcdoc = buildHtmlWithConsoleBridge(htmlPayload);
-      document.getElementById('terminal-cmd-label').textContent = 'omnifree:~/workspace$ preview index.html';
+      document.getElementById('terminal-cmd-label').textContent = 'freeaiworld:~/workspace$ preview index.html';
       document.getElementById('terminal-output').textContent = '$ Rendered preview (start server.py for localhost URL hosting).\n';
       document.getElementById('terminal-exit-badge').textContent = '✓ preview';
       document.getElementById('terminal-exit-badge').className = 'exit-badge ok';
@@ -808,7 +808,7 @@ async function executeCodeInWorkbench(code, lang) {
   // 2. Python or SQL -> Execute on local Python 3.12 runner
   if (['py', 'python', 'python3', 'sql', 'sqlite', 'sqlite3'].includes(lower)) {
     switchWorkbenchTab('terminal');
-    document.getElementById('terminal-cmd-label').textContent = `omnifree:~/workspace$ running ${lower}...`;
+    document.getElementById('terminal-cmd-label').textContent = `freeaiworld:~/workspace$ running ${lower}...`;
     document.getElementById('terminal-output').textContent = `Running ${lower} snippet...\n`;
 
     try {
@@ -841,7 +841,7 @@ async function executeCodeInWorkbench(code, lang) {
   // 3. JavaScript -> Try local Node if present, else isolated Web Worker sandbox
   if (lower === 'js' || lower === 'javascript') {
     switchWorkbenchTab('terminal');
-    document.getElementById('terminal-cmd-label').textContent = 'omnifree:~/workspace$ running javascript...';
+    document.getElementById('terminal-cmd-label').textContent = 'freeaiworld:~/workspace$ running javascript...';
     const remote = await executeCodeRemote({ language: 'javascript', code }).catch(() => ({ unsupported: true }));
     if (!remote.unsupported) {
       renderTerminalResult(remote);
@@ -1022,7 +1022,7 @@ function bindWritingStudio() {
 
   document.getElementById('doc-download-md').addEventListener('click', () => {
     if (!docEl.value) return showToast('Document Canvas is empty.', 'error');
-    downloadTextFile('omnifree-draft.md', docEl.value);
+    downloadTextFile('freeaiworld-draft.md', docEl.value);
   });
 
   document.getElementById('doc-clear-btn').addEventListener('click', () => {
@@ -1478,7 +1478,7 @@ function renderImageGallery() {
     const dl = document.createElement('a');
     dl.className = 'btn-subtle';
     dl.href = item.url;
-    dl.download = `omnifree-${item.seed || item.id}.png`;
+    dl.download = `freeaiworld-${item.seed || item.id}.png`;
     dl.textContent = 'Download';
 
     const reuse = document.createElement('button');

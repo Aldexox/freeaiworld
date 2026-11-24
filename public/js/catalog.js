@@ -413,7 +413,7 @@ export const CURATED_MODELS = [
     context: 'Web Tool',
     freeTier: 'Free Plan (400 Credits)',
     externalUrl: 'https://gamma.app/',
-    description: 'Turns a prompt or document outline into polished slide decks exportable directly as PDF or PPTX. Tip: Draft your outline in OmniFree Write, then paste into Gamma!',
+    description: 'Turns a prompt or document outline into polished slide decks exportable directly as PDF or PPTX. Tip: Draft your outline in freeaiworld Write, then paste into Gamma!',
   },
   {
     id: 'external::canva-magic-studio',

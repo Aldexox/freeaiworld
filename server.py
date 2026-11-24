@@ -1,5 +1,5 @@
 """
-OmniFree AI Studio - Local Server, Real-Time Streaming Proxy,
+freeaiworld - Local Server, Real-Time Streaming Proxy,
 Localhost Website Hosting, Document Extractor & Built-in Code Runner.
 Runs on Python 3.12+ using only the standard library (zero pip dependencies).
 """
@@ -247,7 +247,7 @@ class StudioHandler(SimpleHTTPRequestHandler):
                 HTTPStatus.OK,
                 {
                     "status": "ok",
-                    "app": "OmniFree AI Studio",
+                    "app": "freeaiworld",
                     "python": sys.version.split()[0],
                     "proxy": True,
                     "runner": True,
@@ -446,7 +446,7 @@ class StudioHandler(SimpleHTTPRequestHandler):
             self._send_json(HTTPStatus.BAD_REQUEST, {"error": err})
             return
 
-        headers = {"User-Agent": "OmniFreeAIStudio/1.0"}
+        headers = {"User-Agent": "freeaiworld/1.0"}
         auth_header = self.headers.get("Authorization")
         if auth_header:
             headers["Authorization"] = auth_header
@@ -470,7 +470,7 @@ class StudioHandler(SimpleHTTPRequestHandler):
             self._send_json(HTTPStatus.BAD_REQUEST, {"error": err})
             return
 
-        req_headers: dict[str, str] = {"User-Agent": "OmniFreeAIStudio/1.0"}
+        req_headers: dict[str, str] = {"User-Agent": "freeaiworld/1.0"}
         raw_headers = envelope.get("headers") or {}
         if isinstance(raw_headers, dict):
             for k, v in raw_headers.items():
@@ -697,14 +697,14 @@ class StudioHandler(SimpleHTTPRequestHandler):
                 )
 
     def log_message(self, format: str, *args) -> None:
-        sys.stderr.write(f"[OmniFree] {self.address_string()} - {format % args}\n")
+        sys.stderr.write(f"[freeaiworld] {self.address_string()} - {format % args}\n")
 
 
 def main() -> None:
     mimetypes.add_type("application/javascript", ".js")
     mimetypes.add_type("text/css", ".css")
 
-    parser = argparse.ArgumentParser(description="Run OmniFree AI Studio local server")
+    parser = argparse.ArgumentParser(description="Run freeaiworld local server")
     parser.add_argument("--host", default="127.0.0.1", help="Bind address (default: 127.0.0.1)")
     parser.add_argument(
         "--port",
@@ -716,12 +716,12 @@ def main() -> None:
 
     server = ThreadingHTTPServer((args.host, args.port), StudioHandler)
     url = f"http://{args.host}:{args.port}"
-    print(f"OmniFree AI Studio running at {url}")
+    print(f"freeaiworld running at {url}")
     print("Press Ctrl+C to stop.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nShutting down OmniFree AI Studio...")
+        print("\nShutting down freeaiworld...")
         server.server_close()
 
 

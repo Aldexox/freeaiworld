@@ -81,7 +81,7 @@ export async function executeCodeRemote({ language, code }) {
 }
 
 /**
- * Host generated HTML/CSS/JS site on the local OmniFree server (http://127.0.0.1:<port>/hosted/...)
+ * Host generated HTML/CSS/JS site on the local freeaiworld server (http://127.0.0.1:<port>/hosted/...)
  */
 export async function hostWebsiteLocal({ html, name = '' }) {
   const info = await getServerInfo();
@@ -649,7 +649,7 @@ export async function generateTextStream({
   };
   if (provider === 'openrouter') {
     headers['HTTP-Referer'] = window.location.origin;
-    headers['X-Title'] = 'OmniFree AI Studio';
+    headers['X-Title'] = 'freeaiworld';
   }
 
   const res = await smartFetch(targetUrl, {
